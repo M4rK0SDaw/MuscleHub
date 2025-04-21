@@ -1,0 +1,84 @@
+﻿@{
+	ViewData["Title"] = "Bienvenido a MuscleHub";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/home.css" />
+}
+
+<div class="home-page">
+
+	<!-- Hero Section -->
+	<section class="hero">
+		<div class="container text-center">
+			<h1 class="display-3">¡Bienvenido a MuscleHub!</h1>
+			<p class="lead">Tu destino para alcanzar la mejor versión de ti mismo.</p>
+			<a class="btn btn-primary btn-lg" asp-controller="Miembro" asp-action="Create">Únete Ahora</a>
+		</div>
+	</section>
+	<br />
+	<!-- Features / Ventajas -->
+	<section class="features container">
+		<div class="row text-center">
+			<div class="col-md-4">
+				<!-- Icono de Font Awesome para pesas -->
+				<i class="fas fa-dumbbell display-4 mb-3"></i>
+				<h3>Equipamiento Profesional</h3>
+				<p>Máquinas de última generación y zona de pesas libres.</p>
+			</div>
+			<div class="col-md-4">
+				<!-- Icono de Font Awesome para entrenadores -->
+				<i class="fas fa-chalkboard-teacher display-4 mb-3"></i>
+				<h3>Entrenadores Certificados</h3>
+				<p>Recibe asesoría personalizada de expertos en fitness.</p>
+			</div>
+			<div class="col-md-4">
+				<!-- Icono de Font Awesome para horario -->
+				<i class="fas fa-clock display-4 mb-3"></i>
+				<h3>Horario Extendido</h3>
+				<p>Abierto de 6am a 11pm, ¡entrena cuando tú puedas!</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Llamado a la acción -->
+	<section class="cta text-center bg-dark text-white py-5">
+		<h2>¿Estás listo para transformar tu cuerpo?</h2>
+		<p>Comienza tu camino hoy mismo con una membresía gratuita por 7 días.</p>
+		<a class="btn btn-light btn-lg" asp-controller="Miembro" asp-action="Create">Regístrate Gratis</a>
+	</section>
+
+	<!-- Opcional: Testimonios -->
+	<section class="testimonios container my-5">
+		<div class="text-center mb-5">
+			<h3 class="section-title">Lo que dicen nuestros miembros</h3>
+			<p class="lead">Nuestros miembros comparten sus experiencias transformadoras.</p>
+		</div>
+		<div class="row justify-content-center">
+			<div class="col-md-4">
+				<div class="testimonial-card">
+					<blockquote class="blockquote">
+						<p class="mb-0">“MuscleHub cambió mi vida. Los entrenadores son increíbles y el ambiente me motiva cada día.”</p>
+						<footer class="blockquote-footer">Carlos M., miembro desde 2023</footer>
+					</blockquote>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="testimonial-card">
+					<blockquote class="blockquote">
+						<p class="mb-0">“Un lugar excelente para entrenar. El equipo de profesionales es de primer nivel y el ambiente es perfecto.”</p>
+						<footer class="blockquote-footer">Lucía G., miembro desde 2021</footer>
+					</blockquote>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="testimonial-card">
+					<blockquote class="blockquote">
+						<p class="mb-0">“¡Las mejores instalaciones y un ambiente motivador! Desde que comencé, he visto resultados increíbles.”</p>
+						<footer class="blockquote-footer">José R., miembro desde 2022</footer>
+					</blockquote>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>

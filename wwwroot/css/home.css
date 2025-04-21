@@ -1,0 +1,74 @@
+﻿.home-page .hero {
+    background: url('../img/gym-banner.jpg') center/cover no-repeat;
+    color: white;
+    padding: 100px 20px;
+}
+
+.home-page .features .bi {
+    color: #ff5722;
+}
+
+.home-page .cta {
+    background-color: #111;
+    padding: 60px 20px;
+}
+
+.lead{
+    color: #ffffff;
+}
+
+.home-page .btn-primary {
+    background-color: #ff5722;
+    border: none;
+}
+
+.home-page .btn-primary:hover {
+    background-color: #e64a19;
+}
+
+/* Estilo para la sección de Testimonios */
+.home-page .testimonios {
+    background-color: #f4f4f4; /* Fondo claro para resaltar los testimonios */
+    padding: 60px 0; /* Espaciado superior e inferior */
+}
+
+.home-page .testimonios .section-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.home-page .testimonios .lead {
+    font-size: 1.2rem;
+    color: #777;
+}
+
+.home-page .testimonial-card {
+    background-color: #fff; /* Fondo blanco para cada testimonio */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    padding: 30px;
+    margin-bottom: 30px; /* Espacio entre testimonios */
+    text-align: center;
+}
+
+.home-page .testimonial-card blockquote {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: #555;
+}
+
+.home-page .testimonial-card footer {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.home-page .testimonial-card:hover {
+    transform: translateY(-5px); /* Efecto de hover que levanta el testimonio */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Aumenta la sombra en hover */
+    transition: all 0.3s ease-in-out;
+}

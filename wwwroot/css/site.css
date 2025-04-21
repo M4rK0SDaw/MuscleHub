@@ -1,0 +1,132 @@
+/* Establecer fuente general y tamaño base */
+html {
+    font-size: 14px; /* Establece el tamaño base para dispositivos pequeños */
+    font-family: 'Roboto', sans-serif; /* Fuente más moderna */
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px; /* Aumenta el tamaño para pantallas más grandes */
+    }
+}
+
+/* Reset de márgenes y paddings en todo el documento */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Esto asegura que el padding no afecte el ancho de los elementos */
+}
+
+/* Asegurando que el body ocupe todo el espacio y tenga un fondo suave */
+body {
+    /*margin-bottom: 60px;*/ /* Margen inferior para que no se solapen los elementos */
+    background-color: #f8f9fa; /* Color de fondo suave */
+    font-family: 'Roboto', sans-serif; /* Definir la fuente */
+    color: #333; /* Texto oscuro para mayor legibilidad */
+}
+
+/* Sombra en botones, campos de texto y enlaces con focus */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb; /* Mejora del enfoque en botones y campos */
+    outline: none; /* Elimina el contorno por defecto */
+}
+
+/* Agregar transiciones suaves a botones y enlaces */
+.btn, .btn-link, .form-control {
+    transition: all 0.3s ease; /* Transición suave para hover/focus */
+}
+
+    /* Estilo para los botones (hover y foco) */
+    .btn:hover, .btn:focus {
+        background-color: #ff5722; /* Color de fondo al hacer hover o focus */
+        color: white; /* Texto blanco cuando está activo */
+    }
+
+/* Títulos */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold; /* Títulos en negrita */
+    color: #ff5722; /* Color de los títulos */
+}
+
+/* Definir un tamaño de fuente legible para los párrafos */
+p {
+    line-height: 1.6; /* Mayor espacio entre las líneas de texto */
+    font-size: 1rem; /* Asegura que los párrafos sean legibles */
+    color: #555; /* Color del texto del párrafo */
+}
+
+/* Definición de un contenedor centralizado para mejor alineación */
+.container {
+    width: 100%;
+    max-width: 1200px; /* Máximo tamaño del contenedor */
+    margin: 0 auto; /* Centrado horizontal */
+    padding: 0 15px; /* Espaciado interno */
+}
+
+/* Estilo para tablas */
+table {
+    width: 100%;
+    border-collapse: collapse; /* Evita el espacio entre celdas */
+    margin-bottom: 1rem;
+}
+
+th, td {
+    padding: 0.75rem; /* Espaciado interno en las celdas */
+    text-align: left; /* Alineación del texto */
+}
+
+th {
+    background-color: #007bff; /* Color de fondo para los encabezados */
+    color: white; /* Color del texto */
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2; /* Fila con fondo alternado */
+}
+
+/* Estilo de enlaces */
+a {
+    color: #007bff; /* Color de enlace */
+    text-decoration: none; /* Quita el subrayado */
+}
+
+    a:hover {
+        text-decoration: underline; /* Subrayado al hacer hover */
+    }
+
+/* Estilo de formularios */
+.form-group {
+    margin-bottom: 1.5rem; /* Separación entre los campos */
+}
+
+.form-control {
+    padding: 0.75rem; /* Espaciado interno de los inputs */
+    border-radius: 0.25rem; /* Bordes redondeados */
+    border: 1px solid #ced4da; /* Borde del campo */
+}
+
+    .form-control:focus {
+        border-color: #258cfb; /* Borde azul al hacer focus */
+        box-shadow: 0 0 0 0.25rem rgba(38, 140, 251, 0.25); /* Sombra suave */
+    }
+
+/* Ajustes para móviles */
+@media (max-width: 767px) {
+    html {
+        font-size: 14px; /* Tamaño base más pequeño para móviles */
+    }
+
+    .container {
+        padding: 0 10px; /* Menos padding en pantallas pequeñas */
+    }
+
+    table, th, td {
+        font-size: 0.875rem; /* Reducir el tamaño de la fuente en tablas pequeñas */
+    }
+}
