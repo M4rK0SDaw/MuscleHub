@@ -1,6 +1,6 @@
 @model IEnumerable<MuscleHub.ViewModels.EntrenadoresViewModel>
 
-    
+
 @section Styles {
 	<link rel="stylesheet" href="~/css/index.css" />
 }
@@ -8,41 +8,85 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+	<a asp-action="Create" class="btn btn-primary">Crear Nuevo Entrenador</a>
 </p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Nombre)</th>
-            <th>@Html.DisplayNameFor(model => model.Apellido)</th>
-            <th>@Html.DisplayNameFor(model => model.Correo)</th>
-            <th>@Html.DisplayNameFor(model => model.Telefono)</th>
-            <th>@Html.DisplayNameFor(model => model.Especialidad)</th>
-            <th>@Html.DisplayNameFor(model => model.Password)</th>
-            <th>@Html.DisplayNameFor(model => model.Estado)</th>
-            <th>@Html.DisplayNameFor(model => model.FechaRegistro)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)  @* Cambié Models por Model *@
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
-                <td>@Html.DisplayFor(modelItem => item.Apellido)</td>
-                <td>@Html.DisplayFor(modelItem => item.Correo)</td>
-                <td>@Html.DisplayFor(modelItem => item.Telefono)</td>
-                <td>@Html.DisplayFor(modelItem => item.Especialidad)</td>
-                <td>@Html.DisplayFor(modelItem => item.Password)</td>
-                <td>@Html.DisplayFor(modelItem => item.Estado)</td>
-                <td>@Html.DisplayFor(modelItem => item.FechaRegistro)</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.EntrenadorId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.EntrenadorId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.EntrenadorId">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
+
+<table class="pruebatabla">
+	<thead>
+		<tr>
+			<th>@Html.DisplayNameFor(model => model.Nombre)</th>
+			<th>@Html.DisplayNameFor(model => model.Apellido)</th>
+			<th>@Html.DisplayNameFor(model => model.Correo)</th>
+			<th>@Html.DisplayNameFor(model => model.Telefono)</th>
+			<th>@Html.DisplayNameFor(model => model.Especialidad)</th>
+			<th>@Html.DisplayNameFor(model => model.Estado)</th>
+			<th>@Html.DisplayNameFor(model => model.FechaRegistro)</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)  @* Cambié Models por Model *@
+		{
+			<tr>
+				<td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+				<td>@Html.DisplayFor(modelItem => item.Apellido)</td>
+				<td>@Html.DisplayFor(modelItem => item.Correo)</td>
+				<td>@Html.DisplayFor(modelItem => item.Telefono)</td>
+				<td>@Html.DisplayFor(modelItem => item.Especialidad)</td>
+				<td>@Html.DisplayFor(modelItem => item.Estado)</td>
+
+				<td>@Html.DisplayFor(modelItem => item.FechaRegistro)</td>
+				<td>
+					<a asp-action="Edit" asp-route-id="@item.EntrenadorId" class="btn btn-sm btn-warning">Editar</a>
+					<a asp-action="Details" asp-route-id="@item.EntrenadorId" class="btn btn-sm btn-info">Detalles</a>
+					<a asp-action="Delete" asp-route-id="@item.EntrenadorId" class="btn btn-sm btn-danger">Eliminar</a>
+				</td>
+			</tr>
+		}
+	</tbody>
 </table>
+
+<nav aria-label="Page navigation">
+	<ul class="pagination justify-content-center">
+
+		<!-- Botón Primera Página -->
+		<li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+			<a class="page-link" href="?page=1" aria-label="Primera">
+				<span aria-hidden="true">&laquo;</span>
+			</a>
+		</li>
+
+		<!-- Botón Anterior -->
+		<li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+			<a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)" aria-label="Anterior">
+				<span aria-hidden="true">&lsaquo;</span>
+			</a>
+		</li>
+
+		<!-- Números de página -->
+		@for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+		{
+			<li class="page-item @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+				<a class="page-link" href="?page=@i">@i</a>
+			</li>
+		}
+
+		<!-- Botón Siguiente -->
+		<li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+			<a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)" aria-label="Siguiente">
+				<span aria-hidden="true">&rsaquo;</span>
+			</a>
+		</li>
+
+		<!-- Botón Última Página -->
+		<li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+			<a class="page-link" href="?page=@ViewBag.TotalPages" aria-label="Última">
+				<span aria-hidden="true">&raquo;</span>
+			</a>
+		</li>
+
+	</ul>
+</nav>
+
+

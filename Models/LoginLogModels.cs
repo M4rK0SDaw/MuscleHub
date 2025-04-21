@@ -13,7 +13,7 @@ namespace MuscleHub.Models
 
         public bool Exito { get; set; }
 
-        public string Ip { get; set; }
+        public string? Ip { get; set; }
 
         // Relación con la clase EntrenadoresModels
         public virtual EntrenadoresModels? Entrenadores { get; set; }

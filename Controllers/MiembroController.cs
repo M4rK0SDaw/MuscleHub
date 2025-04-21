@@ -20,39 +20,65 @@ namespace MuscleHub.Controllers
         }
 
         // GET: Miembros
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var miembros = await _context.Miembros.ToListAsync();
+            int pageSize = 10;
+            var totalItems = await _context.Miembros.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            var viewModel = miembros.Select(m => new MiembroViewModel
+            var miembros = await _context.Miembros
+                .OrderBy(m => m.MiembroId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var vm = miembros.Select(m => new MiembroViewModel
             {
                 MiembroId = m.MiembroId,
                 Nombre = m.Nombre,
                 Apellido = m.Apellido,
                 Correo = m.Correo,
+                Password = m.Password,
                 Telefono = m.Telefono,
                 FechaNacimiento = m.FechaNacimiento,
                 Estado = m.Estado,
                 FechaRegistro = m.FechaRegistro
             }).ToList();
 
-            return View(viewModel);
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+            return View(vm);
         }
 
         // GET: Miembros/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
-            var miembroModels = await _context.Miembros
-                .FirstOrDefaultAsync(m => m.MiembroId == id);
+            var miembro = await _context.Miembros.FirstOrDefaultAsync(m => m.MiembroId == id);
+            if (miembro == null) return NotFound();
 
-            if (miembroModels == null) return NotFound();
+            var vm = new MiembroViewModel
+            {
+                MiembroId = miembro.MiembroId,
+                Nombre = miembro.Nombre,
+                Apellido = miembro.Apellido,
+                Correo = miembro.Correo,
+                Password = miembro.Password,
+                Telefono = miembro.Telefono,
+                FechaNacimiento = miembro.FechaNacimiento,
+                Estado = miembro.Estado,
+                FechaRegistro = miembro.FechaRegistro
+            };
 
-            return View(miembroModels);
+            return View(vm);
         }
 
         // GET: Miembro/Create
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -61,65 +87,116 @@ namespace MuscleHub.Controllers
         // POST: Miembro/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MiembroId,Nombre,Apellido,Correo,Telefono,FechaNacimiento,Estado,FechaRegistro")] MiembroModels miembroModels)
+        public async Task<IActionResult> Create(MiembroViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(miembroModels);
+                var miembro = new MiembroModels
+                {
+                    Nombre = viewModel.Nombre,
+                    Apellido = viewModel.Apellido,
+                    Correo = viewModel.Correo,
+                    Password = viewModel.Password,
+                    Telefono = viewModel.Telefono,
+                    FechaNacimiento = viewModel.FechaNacimiento,
+                    Estado = viewModel.Estado,
+                    FechaRegistro = DateTime.Now // o lo que necesites
+                };
+
+                _context.Add(miembro);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(miembroModels);
+
+            return View(viewModel);
         }
 
         // GET: Miembro/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            var miembroModels = await _context.Miembros.FindAsync(id);
-            if (miembroModels == null) return NotFound();
+            var miembro = await _context.Miembros.FindAsync(id);
+            if (miembro == null) return NotFound();
 
-            return View(miembroModels);
+            var viewModel = new MiembroViewModel
+            {
+                MiembroId = miembro.MiembroId,
+                Nombre = miembro.Nombre,
+                Apellido = miembro.Apellido,
+                Correo = miembro.Correo,
+                Password = miembro.Password,
+                Telefono = miembro.Telefono,
+                FechaNacimiento = miembro.FechaNacimiento,
+                Estado = miembro.Estado,
+                FechaRegistro = miembro.FechaRegistro
+            };
+
+            return View(viewModel);
         }
 
         // POST: Miembro/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MiembroId,Nombre,Apellido,Correo,Telefono,FechaNacimiento,Estado,FechaRegistro")] MiembroModels miembroModels)
+        public async Task<IActionResult> Edit(int id, MiembroViewModel viewModel)
         {
-            if (id != miembroModels.MiembroId) return NotFound();
+            if (id != viewModel.MiembroId) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(miembroModels);
+                    var miembro = await _context.Miembros.FindAsync(id);
+                    if (miembro == null) return NotFound();
+
+                    miembro.Nombre = viewModel.Nombre;
+                    miembro.Apellido = viewModel.Apellido;
+                    miembro.Correo = viewModel.Correo;
+                    miembro.Password = viewModel.Password;
+                    miembro.Telefono = viewModel.Telefono;
+                    miembro.FechaNacimiento = viewModel.FechaNacimiento;
+                    miembro.Estado = viewModel.Estado;
+                    miembro.FechaRegistro = viewModel.FechaRegistro;
+
+                    _context.Update(miembro);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MiembroModelsExists(miembroModels.MiembroId))
-                        return NotFound();
-                    else
-                        throw;
+                    if (!MiembroExists(viewModel.MiembroId)) return NotFound();
+                    else throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(miembroModels);
+
+            return View(viewModel);
         }
 
         // GET: Miembro/Delete/5
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
 
-            var miembroModels = await _context.Miembros
-                .FirstOrDefaultAsync(m => m.MiembroId == id);
+            var miembro = await _context.Miembros.FirstOrDefaultAsync(m => m.MiembroId == id);
+            if (miembro == null) return NotFound();
 
-            if (miembroModels == null) return NotFound();
+            var viewModel = new MiembroViewModel
+            {
+                MiembroId = miembro.MiembroId,
+                Nombre = miembro.Nombre,
+                Apellido = miembro.Apellido,
+                Correo = miembro.Correo,
+                Password = miembro.Password,
+                Telefono = miembro.Telefono,
+                FechaNacimiento = miembro.FechaNacimiento,
+                Estado = miembro.Estado,
+                FechaRegistro = miembro.FechaRegistro
+            };
 
-            return View(miembroModels);
+            return View(viewModel);
         }
 
         // POST: Miembro/Delete/5
@@ -127,17 +204,17 @@ namespace MuscleHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var miembroModels = await _context.Miembros.FindAsync(id);
-            if (miembroModels != null)
+            var miembro = await _context.Miembros.FindAsync(id);
+            if (miembro != null)
             {
-                _context.Miembros.Remove(miembroModels);
+                _context.Miembros.Remove(miembro);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MiembroModelsExists(int id)
+        private bool MiembroExists(int id)
         {
             return _context.Miembros.Any(e => e.MiembroId == id);
         }

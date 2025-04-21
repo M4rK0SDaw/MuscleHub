@@ -12,7 +12,9 @@ namespace MuscleHub.ViewModels
         [Required(ErrorMessage = "El nombre del método de pago es obligatorio.")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "El nombre debe tener entre 3 y 50 caracteres.")]
         [RegularExpression(@"^[A-Za-z0-9\s]+$", ErrorMessage = "El nombre solo puede contener letras, números y espacios.")]
-        public string? Nombre { get; set; }
+        [DataType(DataType.Text)]
+        [Display(Name = "Método de Pago")]
+        public string Nombre { get; set; } = string.Empty;
 
         // Relación con la clase Pagos
         public virtual ICollection<PagoViewModel> Pagos { get; set; } = new List<PagoViewModel>();

@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using MuscleHub.Data;
 using MuscleHub.Models;
 using MuscleHub.ViewModels;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MuscleHub.Controllers
 {
@@ -16,11 +19,20 @@ namespace MuscleHub.Controllers
         }
 
         // GET: Entrenadores
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var entrenadores = await _context.Entrenadores.ToListAsync();
+            int pageSize = 10;
+            var totalEntrenadores = await _context.Entrenadores.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalEntrenadores / pageSize);
 
-            var viewModels = entrenadores.Select(e => new EntrenadoresViewModel
+            var entrenadores = await _context.Entrenadores
+                .OrderBy(e => e.Nombre)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var vm = entrenadores.Select(e => new EntrenadoresViewModel
             {
                 EntrenadorId = e.EntrenadorId,
                 Nombre = e.Nombre,
@@ -32,10 +44,15 @@ namespace MuscleHub.Controllers
                 FechaRegistro = e.FechaRegistro
             }).ToList();
 
-            return View(viewModels);
+            // Paginación
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(vm);
         }
 
         // GET: Entrenadores/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -59,6 +76,7 @@ namespace MuscleHub.Controllers
         }
 
         // GET: Entrenadores/Create
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -92,6 +110,7 @@ namespace MuscleHub.Controllers
         }
 
         // GET: Entrenadores/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -154,6 +173,7 @@ namespace MuscleHub.Controllers
         }
 
         // GET: Entrenadores/Delete/5
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();

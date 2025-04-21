@@ -8,15 +8,17 @@ namespace MuscleHub.Models
     {
         public int MiembroId { get; set; }
 
-        public string Nombre { get; set; }
+        public required string Nombre { get; set; }
 
-        public string Apellido { get; set; }
+        public required string Apellido { get; set; } 
 
-        public string Correo { get; set; }
+        public required  string Correo { get; set; } 
 
-        public string Telefono { get; set; }
+        public required string Password { get; set; } = null!;
 
-        public DateTime FechaNacimiento { get; set; }
+        public required  string Telefono { get; set; }="";
+
+        public DateOnly FechaNacimiento { get; set; }
 
         public bool Estado { get; set; }
 

@@ -1,57 +1,64 @@
 @model IEnumerable<MuscleHub.ViewModels.PagoViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Listado de Pagos";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/index.css" />
-}
-
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Crear Nuevo Pago</a>
 </p>
-<table class="table">
+
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Monto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Fecha)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Metodo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Miembro)
-            </th>
+            <th>@Html.DisplayNameFor(m => m.Monto)</th>
+            <th>@Html.DisplayNameFor(m => m.Fecha)</th>
+            <th>@Html.DisplayNameFor(m => m.Metodo.Nombre)</th>
+            <th>@Html.DisplayNameFor(m => m.Miembro.Nombre)</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Monto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fecha)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Metodo.MetodoId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Miembro.MiembroId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.PagoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PagoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PagoId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Monto.ToString("C")</td>
+                <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                <td>@item.Metodo?.Nombre</td>
+                <td>@item.Miembro?.Nombre @item.Miembro?.Apellido</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PagoId"    class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Details" asp-route-id="@item.PagoId" class="btn btn-sm btn-info">Detalles</a>
+                    <a asp-action="Delete" asp-route-id="@item.PagoId" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<nav aria-label="Paginación">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="1" aria-label="Primera">&laquo;</a>
+        </li>
+        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" aria-label="Anterior">&lsaquo;</a>
+        </li>
+
+        @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" aria-label="Siguiente">&rsaquo;</a>
+        </li>
+        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.TotalPages)" aria-label="Última">&raquo;</a>
+        </li>
+    </ul>
+</nav>
