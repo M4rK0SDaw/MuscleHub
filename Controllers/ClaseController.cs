@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MuscleHub.Data;
 using MuscleHub.Models;
+using MuscleHub.ViewModels;
 
 namespace MuscleHub.Controllers
 {
@@ -19,126 +16,233 @@ namespace MuscleHub.Controllers
             _context = context;
         }
 
-        // GET: Clase
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var gymDbContext = _context.Clases.Include(c => c.Entrenadores);
-            return View(await gymDbContext.ToListAsync());
+            int pageSize = 10;
+            var totalItems = await _context.Clases.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // Carga las clases con los entrenadores asociados
+            var clases = await _context.Clases
+                .Include(c => c.Entrenadores) // Cargar la relación de Entrenadores
+                .OrderBy(c => c.Nombre)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Proyección de los datos a un ViewModel
+            var mv = clases.Select(c => new ClaseViewModel
+            {
+                ClaseId = c.ClaseId,
+                Nombre = c.Nombre,
+                Descripcion = c.Descripcion,
+                Dia = c.Dia,
+                HoraInicio = c.HoraInicio,
+                HoraFin = c.HoraFin,
+                EntrenadorId = c.EntrenadorId,
+                Entrenador = new EntrenadoresViewModel
+                {
+                    EntrenadorId = c.Entrenadores?.EntrenadorId ?? 0, // Asigna el ID del entrenador
+                    Nombre = c.Entrenadores?.Nombre ?? "",           // Asigna el nombre del entrenador
+                    Apellido = c.Entrenadores?.Apellido ?? "",       // Asigna el apellido del entrenador
+                    Correo = c.Entrenadores?.Correo ?? "",           // Asigna el correo del entrenador
+                    Telefono = c.Entrenadores?.Telefono ?? "",       // Asigna el teléfono del entrenador
+                    Especialidad = c.Entrenadores?.Especialidad ?? "", // Asigna la especialidad del entrenador
+                    Estado = c.Entrenadores?.Estado ?? true,         // Asigna el estado del entrenador
+                    FechaRegistro = c.Entrenadores?.FechaRegistro ?? DateTime.Now // Asigna la fecha de registro
+                }
+            }).ToList();
+
+            // Pasa la información de la página actual y el total de páginas a la vista
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+                
+            return View(mv);
         }
+
+
 
         // GET: Clase/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var claseModels = await _context.Clases
-                .Include(c => c.Entrenadores)
+            var clase = await _context.Clases
+                .Include(c => c.Entrenadores)  // Cargar el Entrenador relacionado
                 .FirstOrDefaultAsync(m => m.ClaseId == id);
-            if (claseModels == null)
-            {
-                return NotFound();
-            }
 
-            return View(claseModels);
+            if (clase == null) return NotFound();
+
+            var vm = new ClaseViewModel
+            {
+                ClaseId = clase.ClaseId,
+                Nombre = clase.Nombre,
+                Descripcion = clase.Descripcion,
+                Dia = clase.Dia,
+                HoraInicio = clase.HoraInicio,
+                HoraFin = clase.HoraFin,
+                EntrenadorId = clase.EntrenadorId,
+                Entrenador = new EntrenadoresViewModel
+                {
+                    // Asignar valores predeterminados si no hay un entrenador relacionado
+                    EntrenadorId = clase.Entrenadores?.EntrenadorId ?? 0,
+                    Nombre = clase.Entrenadores?.Nombre ?? "No asignado",
+                    Apellido = clase.Entrenadores?.Apellido ?? "No asignado",
+                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada" // Asegúrate de tener la propiedad Especialidad en el ViewModel si es necesario
+                }
+            };
+
+            return View(vm);
         }
+
 
         // GET: Clase/Create
         public IActionResult Create()
         {
-            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "EntrenadorId");
+            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "NombreCompleto");
+
             return View();
         }
 
         // POST: Clase/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ClaseId,Nombre,Descripcion,Dia,HoraInicio,HoraFin,EntrenadorId")] ClaseModels claseModels)
+        public async Task<IActionResult> Create(ClaseViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(claseModels);
+                bool existeConflicto = _context.Clases.Any(c =>
+                    c.EntrenadorId == vm.EntrenadorId &&
+                    c.Dia == vm.Dia &&
+                    ((vm.HoraInicio >= c.HoraInicio && vm.HoraInicio < c.HoraFin) ||
+                     (vm.HoraFin > c.HoraInicio && vm.HoraFin <= c.HoraFin)));
+
+                if (existeConflicto)
+                {
+                    ModelState.AddModelError("", "El entrenador ya tiene una clase en ese horario.");
+                    ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "NombreCompleto", vm.EntrenadorId);
+
+                    return View(vm);
+                }
+
+                var model = new ClaseModels
+                {
+                    Nombre = vm.Nombre,
+                    Descripcion = vm.Descripcion,
+                    Dia = vm.Dia,
+                    HoraInicio = vm.HoraInicio,
+                    HoraFin = vm.HoraFin,
+                    EntrenadorId = vm.EntrenadorId
+                };
+
+                _context.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "EntrenadorId", claseModels.EntrenadorId);
-            return View(claseModels);
+
+            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "NombreCompleto", vm.EntrenadorId);
+            return View(vm);
         }
 
         // GET: Clase/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var claseModels = await _context.Clases.FindAsync(id);
-            if (claseModels == null)
+            var clase = await _context.Clases.FindAsync(id);
+            if (clase == null) return NotFound();
+
+            var vm = new ClaseViewModel
             {
-                return NotFound();
-            }
-            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "EntrenadorId", claseModels.EntrenadorId);
-            return View(claseModels);
+                ClaseId = clase.ClaseId,
+                Nombre = clase.Nombre,
+                Descripcion = clase.Descripcion,
+                Dia = clase.Dia,
+                HoraInicio = clase.HoraInicio,
+                HoraFin = clase.HoraFin,
+                EntrenadorId = clase.EntrenadorId,
+                Entrenador = new EntrenadoresViewModel
+                {
+                    // Asignar valores predeterminados si no hay un entrenador relacionado
+                    EntrenadorId = clase.Entrenadores?.EntrenadorId ?? 0,
+                    Nombre = clase.Entrenadores?.Nombre ?? "No asignado",
+                    Apellido = clase.Entrenadores?.Apellido ?? "No asignado",
+                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada" // Asegúrate de tener la propiedad Especialidad en el ViewModel si es necesario
+                }
+            };
+
+            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "NombreCompleto", vm.EntrenadorId);
+
+            return View(vm);
         }
 
         // POST: Clase/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ClaseId,Nombre,Descripcion,Dia,HoraInicio,HoraFin,EntrenadorId")] ClaseModels claseModels)
+        public async Task<IActionResult> Edit(int id, ClaseViewModel vm)
         {
-            if (id != claseModels.ClaseId)
-            {
-                return NotFound();
-            }
+            if (id != vm.ClaseId) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(claseModels);
+                    var model = await _context.Clases.FindAsync(id);
+                    if (model == null) return NotFound();
+
+                    model.Nombre = vm.Nombre;
+                    model.Descripcion = vm.Descripcion;
+                    model.Dia = vm.Dia;
+                    model.HoraInicio = vm.HoraInicio;
+                    model.HoraFin = vm.HoraFin;
+                    model.EntrenadorId = vm.EntrenadorId;
+
+                    _context.Update(model);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClaseModelsExists(claseModels.ClaseId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ClaseModelsExists(vm.ClaseId)) return NotFound();
+                    else throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "EntrenadorId", claseModels.EntrenadorId);
-            return View(claseModels);
+
+            return View(vm);
         }
 
         // GET: Clase/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var claseModels = await _context.Clases
+            var clase = await _context.Clases
                 .Include(c => c.Entrenadores)
                 .FirstOrDefaultAsync(m => m.ClaseId == id);
-            if (claseModels == null)
-            {
-                return NotFound();
-            }
 
-            return View(claseModels);
+            if (clase == null) return NotFound();
+
+            var vm = new ClaseViewModel
+            {
+                ClaseId = clase.ClaseId,
+                Nombre = clase.Nombre,
+                Descripcion = clase.Descripcion,
+                Dia = clase.Dia,
+                HoraInicio = clase.HoraInicio,
+                HoraFin = clase.HoraFin,
+                EntrenadorId = clase.EntrenadorId,
+                Entrenador = new EntrenadoresViewModel
+                {
+                    // Asignar valores predeterminados si no hay un entrenador relacionado
+                    EntrenadorId = clase.Entrenadores?.EntrenadorId ?? 0,
+                    Nombre = clase.Entrenadores?.Nombre ?? "No asignado",
+                    Apellido = clase.Entrenadores?.Apellido ?? "No asignado",
+                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada" // Asegúrate de tener la propiedad Especialidad en el ViewModel si es necesario
+                }
+            };
+
+            return View(vm);
         }
 
         // POST: Clase/Delete/5
@@ -146,13 +250,13 @@ namespace MuscleHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var claseModels = await _context.Clases.FindAsync(id);
-            if (claseModels != null)
+            var clase = await _context.Clases.FindAsync(id);
+            if (clase != null)
             {
-                _context.Clases.Remove(claseModels);
+                _context.Clases.Remove(clase);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

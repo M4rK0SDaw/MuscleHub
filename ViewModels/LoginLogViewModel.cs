@@ -6,7 +6,7 @@ namespace MuscleHub.ViewModels
     public class LoginLogViewModel
     {
         [Key]
-        public int LogId { get; set; }
+        public int LogId { get; set; }      
 
         public int? EntrenadorId { get; set; }
        

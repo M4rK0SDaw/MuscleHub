@@ -18,23 +18,54 @@ namespace MuscleHub.Controllers
             _context = context;
         }
 
-        // GET: Pago
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var pagos = await _context.Pagos
-                .Include(p => p.Metodo)
-                .Include(p => p.Miembro)
-                .Select(p => new PagoViewModel
+            int pageSize = 10;
+            var totalPagos = await _context.Pagos.CountAsync();
+
+            var pago = await _context.Pagos
+               .Include(p => p.Metodo) 
+               .Include(p => p.Miembro)
+               .OrderBy(p => p.PagoId)
+               .Skip((page - 1) * pageSize)
+               .Take(pageSize)
+               .ToListAsync();
+
+
+
+            var mv = pago.Select(p => new PagoViewModel
                 {
-                    PagoId   = p.PagoId,
+                    PagoId = p.PagoId,
                     MiembroId = p.MiembroId,
                     Monto = p.Monto,
                     Fecha = p.Fecha,
-                    MetodoId = p.MetodoId
+                    MetodoId = p.MetodoId,
+                    Metodo = new MetodosPagoViewModel
+                    {
+                        MetodoId = p.Metodo.MetodoId,
+                        Nombre = p.Metodo.Nombre
+                    },
+                    Miembro = new MiembroViewModel   // inicializador
+                    {
+                        MiembroId = p.Miembro.MiembroId,
+                        Nombre = p.Miembro.Nombre,
+                        Apellido = p.Miembro.Apellido,
+                        Correo = p.Miembro.Correo,
+                        Password = "",
+                        Telefono = p.Miembro.Telefono,      
+                        Estado = p.Miembro.Estado,
+                        FechaRegistro = p.Miembro.FechaRegistro
+                    }
                 })
-                .ToListAsync();
-            return View(pagos);
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalPagos / pageSize);
+
+            return View(mv);
         }
+
 
         // GET: Pago/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -177,7 +208,7 @@ namespace MuscleHub.Controllers
 
         // POST: Pago/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]          
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var pago = await _context.Pagos.FindAsync(id);

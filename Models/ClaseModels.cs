@@ -7,11 +7,11 @@ namespace MuscleHub.Models
     {
         public int ClaseId { get; set; }
 
-        public string Nombre { get; set; }
+        public required string Nombre { get; set; }
 
-        public string Descripcion { get; set; }
+        public required string Descripcion { get; set; }
 
-        public string Dia { get; set; }
+        public required string Dia { get; set; }
 
         public TimeOnly HoraInicio { get; set; }
 
@@ -20,6 +20,6 @@ namespace MuscleHub.Models
         public int EntrenadorId { get; set; }
 
         // Relación con los entrenadores
-        public virtual EntrenadoresModels? Entrenadores { get; set; }
+        public virtual EntrenadoresModels? Entrenadores { get; set; }       
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,8 @@ namespace MuscleHub.Controllers
         }
 
         // GET: MetodosPago
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index()
         {
             var metodos = await _context.MetodosPagos
@@ -33,6 +36,7 @@ namespace MuscleHub.Controllers
                     }).ToList()
                 })
                 .ToListAsync();
+
             return View(metodos);
         }
 
@@ -141,7 +145,9 @@ namespace MuscleHub.Controllers
         {
             if (id == null) return NotFound();
 
-            var metodo = await _context.MetodosPagos.FindAsync(id);
+            var metodo = await _context.MetodosPagos
+                .FirstOrDefaultAsync(m => m.MetodoId == id);
+
             if (metodo == null) return NotFound();
 
             var viewModel = new MetodosPagoViewModel
@@ -168,6 +174,7 @@ namespace MuscleHub.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // Verifica si el método de pago existe
         private bool MetodoExists(int id)
         {
             return _context.MetodosPagos.Any(e => e.MetodoId == id);

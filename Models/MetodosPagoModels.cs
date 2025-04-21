@@ -8,7 +8,7 @@ namespace MuscleHub.Models
     {
         public int MetodoId { get; set; }
 
-        public string? Nombre { get; set; }
+        public required string Nombre { get; set; }
 
         // Relación con la clase Pagos
         public virtual ICollection<PagoModels> Pagos { get; set; } = [];
