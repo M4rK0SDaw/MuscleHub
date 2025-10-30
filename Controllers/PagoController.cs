@@ -23,43 +23,39 @@ namespace MuscleHub.Controllers
             int pageSize = 10;
             var totalPagos = await _context.Pagos.CountAsync();
 
-            var pago = await _context.Pagos
-               .Include(p => p.Metodo) 
-               .Include(p => p.Miembro)
-               .OrderBy(p => p.PagoId)
-               .Skip((page - 1) * pageSize)
-               .Take(pageSize)
-               .ToListAsync();
-
-
-
-            var mv = pago.Select(p => new PagoViewModel
-                {
-                    PagoId = p.PagoId,
-                    MiembroId = p.MiembroId,
-                    Monto = p.Monto,
-                    Fecha = p.Fecha,
-                    MetodoId = p.MetodoId,
-                    Metodo = new MetodosPagoViewModel
-                    {
-                        MetodoId = p.Metodo.MetodoId,
-                        Nombre = p.Metodo.Nombre
-                    },
-                    Miembro = new MiembroViewModel   // inicializador
-                    {
-                        MiembroId = p.Miembro.MiembroId,
-                        Nombre = p.Miembro.Nombre,
-                        Apellido = p.Miembro.Apellido,
-                        Correo = p.Miembro.Correo,
-                        Password = "",
-                        Telefono = p.Miembro.Telefono,      
-                        Estado = p.Miembro.Estado,
-                        FechaRegistro = p.Miembro.FechaRegistro
-                    }
-                })
+            var pagos = await _context.Pagos
+                .Include(p => p.Metodo)
+                .Include(p => p.Miembro)
+                .OrderBy(p => p.PagoId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
+
+            var mv = pagos.Select(p => new PagoViewModel
+            {
+                PagoId = p.PagoId,
+                MiembroId = p.MiembroId,
+                Monto = p.Monto,
+                Fecha = p.Fecha,
+                MetodoId = p.MetodoId,
+                Metodo = new MetodosPagoViewModel
+                {
+                    MetodoId = p.Metodo.MetodoId,
+                    Nombre = p.Metodo.Nombre
+                },
+                Miembro = new MiembroViewModel
+                {
+                    MiembroId = p.Miembro.MiembroId,
+                    Nombre = p.Miembro.Nombre,
+                    Apellido = p.Miembro.Apellido,
+                    Correo = p.Miembro.Correo,
+                    Password = "",
+                    Telefono = p.Miembro.Telefono,
+                    Estado = p.Miembro.Estado,
+                    FechaRegistro = p.Miembro.FechaRegistro
+                }
+            }).ToList();
+
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalPagos / pageSize);
 
@@ -85,7 +81,23 @@ namespace MuscleHub.Controllers
                 MiembroId = pago.MiembroId,
                 Monto = pago.Monto,
                 Fecha = pago.Fecha,
-                MetodoId = pago.MetodoId
+                MetodoId = pago.MetodoId,
+                Metodo = new MetodosPagoViewModel
+                {
+                    MetodoId = pago.Metodo.MetodoId,
+                    Nombre = pago.Metodo.Nombre
+                },
+                Miembro = new MiembroViewModel
+                {
+                    MiembroId = pago.Miembro.MiembroId,
+                    Nombre = pago.Miembro.Nombre,
+                    Apellido = pago.Miembro.Apellido,
+                    Correo = pago.Miembro.Correo,
+                    Password = string.Empty,
+                    Telefono = pago.Miembro.Telefono,
+                    Estado = pago.Miembro.Estado,
+                    FechaRegistro = pago.Miembro.FechaRegistro
+                }
             };
 
             return View(viewModel);

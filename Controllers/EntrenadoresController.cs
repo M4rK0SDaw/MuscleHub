@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MuscleHub.Data;
 using MuscleHub.Models;
 using MuscleHub.ViewModels;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MuscleHub.Controllers
 {
@@ -18,20 +16,14 @@ namespace MuscleHub.Controllers
             _context = context;
         }
 
-        // GET: Entrenadores
+
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1)
         {
             int pageSize = 10;
             var totalEntrenadores = await _context.Entrenadores.CountAsync();
             var totalPages = (int)Math.Ceiling((double)totalEntrenadores / pageSize);
-
-            var entrenadores = await _context.Entrenadores
-                .OrderBy(e => e.Nombre)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
+            var entrenadores = await _context.Entrenadores.OrderBy(e => e.Nombre).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             var vm = entrenadores.Select(e => new EntrenadoresViewModel
             {
                 EntrenadorId = e.EntrenadorId,
@@ -42,12 +34,8 @@ namespace MuscleHub.Controllers
                 Especialidad = e.Especialidad,
                 Estado = e.Estado,
                 FechaRegistro = e.FechaRegistro
-            }).ToList();
-
-            // Paginación
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = totalPages;
-
+            }).ToList(); // Paginación
+            ViewBag.CurrentPage = page; ViewBag.TotalPages = totalPages;
             return View(vm);
         }
 
@@ -111,9 +99,11 @@ namespace MuscleHub.Controllers
 
         // GET: Entrenadores/Edit/5
         [HttpGet]
+
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return RedirectToAction(nameof(Index)); // si no envían ID
 
             var entrenador = await _context.Entrenadores.FindAsync(id);
             if (entrenador == null) return NotFound();

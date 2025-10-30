@@ -1,60 +1,84 @@
-@* @model IEnumerable<MuscleHub.ViewModels.EntrenadoresViewModel> *@
 @model MuscleHub.ViewModels.EntrenadoresViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Registrar Entrenador";
 }
 
-<h1>Create</h1>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+        <h2 class="mb-4 text-primary fw-bold">
+            <i class="bi bi-person-plus-fill"></i> @ViewData["Title"]
+        </h2>
 
-<h4>EntrenadoresModels</h4>
+        <form asp-action="Create" class="d-flex flex-column gap-3">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+            <div class="d-flex flex-wrap gap-3">
+                <div class="flex-fill">
+                    <label asp-for="Nombre" class="form-label fw-semibold"></label>
+                    <input asp-for="Nombre" class="form-control" placeholder="Ej. Juan" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="flex-fill">
+                    <label asp-for="Apellido" class="form-label fw-semibold"></label>
+                    <input asp-for="Apellido" class="form-control" placeholder="Ej. Pérez" />
+                    <span asp-validation-for="Apellido" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Apellido" class="control-label"></label>
-                <input asp-for="Apellido" class="form-control" />
-                <span asp-validation-for="Apellido" class="text-danger"></span>
+
+            <div class="d-flex flex-wrap gap-3">
+                <div class="flex-fill">
+                    <label asp-for="Correo" class="form-label fw-semibold"></label>
+                    <input asp-for="Correo" class="form-control" placeholder="correo@ejemplo.com" />
+                    <span asp-validation-for="Correo" class="text-danger"></span>
+                </div>
+
+                <div class="flex-fill">
+                    <label asp-for="Telefono" class="form-label fw-semibold"></label>
+                    <input asp-for="Telefono" class="form-control" placeholder="+34 600 123 456" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Correo" class="control-label"></label>
-                <input asp-for="Correo" class="form-control" />
-                <span asp-validation-for="Correo" class="text-danger"></span>
+
+            <div class="d-flex flex-wrap gap-3">
+                <div class="flex-fill">
+                    <label asp-for="Especialidad" class="form-label fw-semibold"></label>
+                    <input asp-for="Especialidad" class="form-control" placeholder="Ej. Musculación" />
+                    <span asp-validation-for="Especialidad" class="text-danger"></span>
+                </div>
+
+                <div class="flex-fill">
+                    <label asp-for="Password" class="form-label fw-semibold"></label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Contraseña" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
-                <span asp-validation-for="Telefono" class="text-danger"></span>
+
+            <!-- Opcional: switch para Estado -->
+            @* 
+            <div class="form-check form-switch mt-3">
+                <input asp-for="Estado" class="form-check-input" type="checkbox" role="switch" id="EstadoSwitch">
+                <label class="form-check-label" for="EstadoSwitch">@(Model.Estado ? "Activo" : "Inactivo")</label>
             </div>
-            <div class="form-group">
-                <label asp-for="Especialidad" class="control-label"></label>
-                <input asp-for="Especialidad" class="form-control" />
-                <span asp-validation-for="Especialidad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            *@
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Volver
+                </a>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check-circle-fill"></i> Crear
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

@@ -16,21 +16,20 @@ namespace MuscleHub.Controllers
             _context = context;
         }
 
+        // GET: Clase
         public async Task<IActionResult> Index(int page = 1)
         {
             int pageSize = 10;
             var totalItems = await _context.Clases.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            // Carga las clases con los entrenadores asociados
             var clases = await _context.Clases
-                .Include(c => c.Entrenadores) // Cargar la relación de Entrenadores
+                .Include(c => c.Entrenadores)
                 .OrderBy(c => c.Nombre)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Proyección de los datos a un ViewModel
             var mv = clases.Select(c => new ClaseViewModel
             {
                 ClaseId = c.ClaseId,
@@ -42,25 +41,22 @@ namespace MuscleHub.Controllers
                 EntrenadorId = c.EntrenadorId,
                 Entrenador = new EntrenadoresViewModel
                 {
-                    EntrenadorId = c.Entrenadores?.EntrenadorId ?? 0, // Asigna el ID del entrenador
-                    Nombre = c.Entrenadores?.Nombre ?? "",           // Asigna el nombre del entrenador
-                    Apellido = c.Entrenadores?.Apellido ?? "",       // Asigna el apellido del entrenador
-                    Correo = c.Entrenadores?.Correo ?? "",           // Asigna el correo del entrenador
-                    Telefono = c.Entrenadores?.Telefono ?? "",       // Asigna el teléfono del entrenador
-                    Especialidad = c.Entrenadores?.Especialidad ?? "", // Asigna la especialidad del entrenador
-                    Estado = c.Entrenadores?.Estado ?? true,         // Asigna el estado del entrenador
-                    FechaRegistro = c.Entrenadores?.FechaRegistro ?? DateTime.Now // Asigna la fecha de registro
+                    EntrenadorId = c.Entrenadores?.EntrenadorId ?? 0,
+                    Nombre = c.Entrenadores?.Nombre ?? "",
+                    Apellido = c.Entrenadores?.Apellido ?? "",
+                    Correo = c.Entrenadores?.Correo ?? "",
+                    Telefono = c.Entrenadores?.Telefono ?? "",
+                    Especialidad = c.Entrenadores?.Especialidad ?? "",
+                    Estado = c.Entrenadores?.Estado ?? true,
+                    FechaRegistro = c.Entrenadores?.FechaRegistro ?? DateTime.Now
                 }
             }).ToList();
 
-            // Pasa la información de la página actual y el total de páginas a la vista
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
-                
+
             return View(mv);
         }
-
-
 
         // GET: Clase/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -68,7 +64,7 @@ namespace MuscleHub.Controllers
             if (id == null) return NotFound();
 
             var clase = await _context.Clases
-                .Include(c => c.Entrenadores)  // Cargar el Entrenador relacionado
+                .Include(c => c.Entrenadores)
                 .FirstOrDefaultAsync(m => m.ClaseId == id);
 
             if (clase == null) return NotFound();
@@ -84,23 +80,20 @@ namespace MuscleHub.Controllers
                 EntrenadorId = clase.EntrenadorId,
                 Entrenador = new EntrenadoresViewModel
                 {
-                    // Asignar valores predeterminados si no hay un entrenador relacionado
                     EntrenadorId = clase.Entrenadores?.EntrenadorId ?? 0,
                     Nombre = clase.Entrenadores?.Nombre ?? "No asignado",
                     Apellido = clase.Entrenadores?.Apellido ?? "No asignado",
-                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada" // Asegúrate de tener la propiedad Especialidad en el ViewModel si es necesario
+                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada"
                 }
             };
 
             return View(vm);
         }
 
-
         // GET: Clase/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "NombreCompleto");
-
+            await CargarEntrenadoresDropDown();
             return View();
         }
 
@@ -120,8 +113,7 @@ namespace MuscleHub.Controllers
                 if (existeConflicto)
                 {
                     ModelState.AddModelError("", "El entrenador ya tiene una clase en ese horario.");
-                    ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "NombreCompleto", vm.EntrenadorId);
-
+                    await CargarEntrenadoresDropDown(vm.EntrenadorId);
                     return View(vm);
                 }
 
@@ -140,7 +132,7 @@ namespace MuscleHub.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "NombreCompleto", vm.EntrenadorId);
+            await CargarEntrenadoresDropDown(vm.EntrenadorId);
             return View(vm);
         }
 
@@ -149,7 +141,10 @@ namespace MuscleHub.Controllers
         {
             if (id == null) return NotFound();
 
-            var clase = await _context.Clases.FindAsync(id);
+            var clase = await _context.Clases
+                .Include(c => c.Entrenadores)
+                .FirstOrDefaultAsync(c => c.ClaseId == id);
+
             if (clase == null) return NotFound();
 
             var vm = new ClaseViewModel
@@ -163,16 +158,14 @@ namespace MuscleHub.Controllers
                 EntrenadorId = clase.EntrenadorId,
                 Entrenador = new EntrenadoresViewModel
                 {
-                    // Asignar valores predeterminados si no hay un entrenador relacionado
                     EntrenadorId = clase.Entrenadores?.EntrenadorId ?? 0,
                     Nombre = clase.Entrenadores?.Nombre ?? "No asignado",
                     Apellido = clase.Entrenadores?.Apellido ?? "No asignado",
-                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada" // Asegúrate de tener la propiedad Especialidad en el ViewModel si es necesario
+                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada"
                 }
             };
 
-            ViewData["EntrenadorId"] = new SelectList(_context.Entrenadores, "EntrenadorId", "NombreCompleto", vm.EntrenadorId);
-
+            await CargarEntrenadoresDropDown(vm.EntrenadorId);
             return View(vm);
         }
 
@@ -209,6 +202,7 @@ namespace MuscleHub.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            await CargarEntrenadoresDropDown(vm.EntrenadorId);
             return View(vm);
         }
 
@@ -234,11 +228,10 @@ namespace MuscleHub.Controllers
                 EntrenadorId = clase.EntrenadorId,
                 Entrenador = new EntrenadoresViewModel
                 {
-                    // Asignar valores predeterminados si no hay un entrenador relacionado
                     EntrenadorId = clase.Entrenadores?.EntrenadorId ?? 0,
                     Nombre = clase.Entrenadores?.Nombre ?? "No asignado",
                     Apellido = clase.Entrenadores?.Apellido ?? "No asignado",
-                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada" // Asegúrate de tener la propiedad Especialidad en el ViewModel si es necesario
+                    Especialidad = clase.Entrenadores?.Especialidad ?? "No asignada"
                 }
             };
 
@@ -263,6 +256,20 @@ namespace MuscleHub.Controllers
         private bool ClaseModelsExists(int id)
         {
             return _context.Clases.Any(e => e.ClaseId == id);
+        }
+
+        // Método auxiliar para cargar dropdown de entrenadores
+        private async Task CargarEntrenadoresDropDown(int? selectedId = null)
+        {
+            var entrenadores = await _context.Entrenadores
+                .Select(e => new
+                {
+                    e.EntrenadorId,
+                    NombreCompleto = e.Nombre + " " + e.Apellido
+                })
+                .ToListAsync();
+
+            ViewData["EntrenadorId"] = new SelectList(entrenadores, "EntrenadorId", "NombreCompleto", selectedId);
         }
     }
 }

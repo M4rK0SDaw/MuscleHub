@@ -1,66 +1,53 @@
 ﻿@model MuscleHub.ViewModels.MiembroViewModel
+
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Miembro";
 }
 
-<h1>Miembro Details</h1>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+        <h2 class="mb-4 text-primary fw-bold">
+            <i class="bi bi-person-badge-fill"></i> @Model.Nombre @Model.Apellido
+        </h2>
 
-<div>
-    <h4>Miembro Information</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Correo:</label>
+                <p class="mb-0">@Model.Correo</p>
+            </div>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Apellido)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Apellido)
-        </dd>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Teléfono:</label>
+                <p class="mb-0">@Model.Telefono</p>
+            </div>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Correo)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Correo)
-        </dd>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Fecha de nacimiento:</label>
+                <p class="mb-0">@Model.FechaNacimiento.ToString("dd/MM/yyyy")</p>
+            </div>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Telefono)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Telefono)
-        </dd>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Estado:</label>
+                <span class="badge @(Model.Estado ? "bg-success" : "bg-danger")">
+                    @(Model.Estado ? "Activo" : "Inactivo")
+                </span>
+            </div>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaNacimiento)
-        </dt>
-        <dd class="col-sm-10">
-            @Model.FechaNacimiento.ToString("dd/MM/yyyy")
-        </dd>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Contraseña:</label>
+                <p class="mb-0"><em>*** Oculta ***</em></p>
+            </div>
+        </div>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
-        <dd class="col-sm-10">
-            @(Model.Estado ? "Activo" : "Inactivo")
-        </dd>
-
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class="col-sm-10">
-            *** Contraseña Oculta ***
-        </dd>
-    </dl>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.MiembroId" class="btn btn-warning fw-semibold">
+                <i class="bi bi-pencil-square"></i> Editar
+            </a>
+            <a asp-action="Index" class="btn btn-primary fw-semibold">
+                <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+            </a>
+        </div>
+    </div>
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.MiembroId" class="btn btn-warning">Edit</a> |
-    <a asp-action="Index" class="btn btn-primary">Back to List</a>
-</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

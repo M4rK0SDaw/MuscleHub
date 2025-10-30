@@ -1,42 +1,60 @@
 @model MuscleHub.ViewModels.PagoViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Pago";
 }
 
-<h1>Details</h1>
+<h1>Detalles del Pago</h1>
 
 <div>
-    <h4>PagoModels</h4>
+    <h4>Pago</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.Monto)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-9">
             @Html.DisplayFor(model => model.Monto)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.Fecha)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-9">
             @Html.DisplayFor(model => model.Fecha)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Metodo)
+
+        <dt class="col-sm-3">
+            Método de Pago
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Metodo.MetodoId)
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Metodo.Nombre)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Miembro)
+
+        <dt class="col-sm-3">
+            Miembro
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Miembro.MiembroId)
+        <dd class="col-sm-9">
+            @($"{Model.Miembro.Nombre} {Model.Miembro.Apellido}")
+        </dd>
+
+        <dt class="col-sm-3">
+            Correo del Miembro
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Miembro.Correo)
+        </dd>
+
+        <dt class="col-sm-3">
+            Teléfono
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Miembro.Telefono)
         </dd>
     </dl>
 </div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.PagoId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.PagoId" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
 </div>

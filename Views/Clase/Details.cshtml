@@ -1,54 +1,35 @@
-@model MuscleHub.Models.ClaseModels
+@model MuscleHub.ViewModels.ClaseViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles de Clase";
 }
 
-<h1>Details</h1>
+<div class="container py-4">
+    <h2 class="text-primary fw-bold mb-4">
+        <i class="bi bi-info-circle-fill"></i> @ViewData["Title"]
+    </h2>
 
-<div>
-    <h4>ClaseModels</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descripcion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Dia)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Dia)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HoraInicio)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HoraInicio)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HoraFin)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HoraFin)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Entrenadores)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Entrenadores.EntrenadorId)
-        </dd>
-    </dl>
+    <div class="card shadow-sm rounded-3 p-4 mb-4">
+        <div class="row g-3">
+            <div class="col-md-6"><strong>Nombre:</strong> @Model.Nombre</div>
+            <div class="col-md-6"><strong>Descripción:</strong> @Model.Descripcion</div>
+            <div class="col-md-6"><strong>Día:</strong> @Model.Dia</div>
+            <div class="col-md-3"><strong>Hora Inicio:</strong> @Model.HoraInicio.ToString("HH:mm")</div>
+            <div class="col-md-3"><strong>Hora Fin:</strong> @Model.HoraFin.ToString("HH:mm")</div>
+            <div class="col-md-6"><strong>Entrenador:</strong> @Model.Entrenador?.Nombre @Model.Entrenador?.Apellido</div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.ClaseId" class="btn btn-warning">
+            <i class="bi bi-pencil-square"></i> Editar
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver
+        </a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ClaseId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+}
