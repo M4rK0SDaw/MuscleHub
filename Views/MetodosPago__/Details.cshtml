@@ -1,0 +1,30 @@
+@model MuscleHub.ViewModels.PagoViewModel
+
+@{
+    ViewData["Title"] = "Detalles del Pago";
+}
+
+<h1>Detalles del Pago</h1>
+
+<div>
+    <h4>Pago</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Monto</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Monto)</dd>
+
+        <dt class="col-sm-2">Fecha</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Fecha)</dd>
+
+        <dt class="col-sm-2">Método de Pago</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Fecha)</dd>
+
+        <dt class="col-sm-2">Miembro</dt>
+        <dd class="col-sm-10">@($"{Model.Miembro.Nombre} {Model.Miembro.Apellido}")</dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.PagoId">Editar</a> |
+    <a asp-action="Index">Volver a la lista</a>
+</div>

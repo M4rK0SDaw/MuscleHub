@@ -8,26 +8,27 @@ namespace MuscleHub.ViewModels
     public class EntrenadoresViewModel
     {
         [Key]
+        [Display(Name = "Código")]
         public int EntrenadorId { get; set; }
 
         [Required(ErrorMessage = "El nombre del entrenador es obligatorio.")]
         [StringLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres.")]
         [DataType(DataType.Text)]
         [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "El nombre solo puede contener letras y espacios.")]
-        [Display(Name = "Nombre del Entrenador")]
+        [Display(Name = "Nombre")]
         public string Nombre { get; set; } 
 
         [Required(ErrorMessage = "El apellido del entrenador es obligatorio.")]
         [StringLength(100, ErrorMessage = "El apellido no puede superar los 100 caracteres.")]
         [DataType(DataType.Text)]
         [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "El apellido solo puede contener letras y espacios.")]
-        [Display(Name = "Apellido del Entrenador")]
+        [Display(Name = "Apellido ")]
         public string Apellido { get; set; } 
         [Required(ErrorMessage = "El correo del entrenador es obligatorio.")]
         [EmailAddress(ErrorMessage = "Correo electrónico no válido.")]
         [StringLength(100, ErrorMessage = "El correo electrónico no puede superar los 100 caracteres.")]
         [DataType(DataType.EmailAddress)]
-        [Display(Name = "Correo Electrónico")]
+        [Display(Name = "E-mail")]
         public string Correo { get; set; } 
 
         [Required(ErrorMessage = "El teléfono del entrenador es obligatorio.")]
@@ -51,10 +52,14 @@ namespace MuscleHub.ViewModels
             ErrorMessage = "La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.")]
         [DataType(DataType.Password)]
         [Display(Name = "Contraseña")]
-        public string Password { get; set; }    
+        public string Password { get; set; }
+        
+        [Required(ErrorMessage = "El estado del entrenador es obligatorio.")]
+        [Display(Name = "Estado")]
+        public bool Estado { get; set; } = true; // true = activo, false = inactivo
 
-        public bool Estado { get; set; } = true;
-
+        [DataType(DataType.Date)]
+        [Display(Name = "Fecha de Registro")]
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
         public virtual ICollection<ClaseViewModel> Clases { get; set; } = new List<ClaseViewModel>();
